@@ -31,99 +31,42 @@ gamedisplay.fill(white)
 
 ''' Adding color to places '''
 def add_place(x,y,color):
-    global white_places, black_places, main_matrix
-    main_matrix[x][y] = int(color)
-    if color > 0:
-        white_places.append([x,y])
-        if [x,y] in black_places:
-            ind = black_places.index([x,y])
-            black_places.pop(ind)
-    else:
-        black_places.append([x,y])
-        if [x,y] in white_places:
-            ind = white_places.index([x,y])
-            white_places.pop(ind)
+    global main_matrix
+    main_matrix[y][x] = int(color)
+
+''' Turning all the checks between (x1,y1) and (x2, y2) '''
+def turn_all(x1, y1, x2, y2, color, stepx, stepy):
+    nx1 = int(x1)
+    ny1 = int(y1)
+    print x1, y1, x2, y2, stepx, stepy
+    while nx1 != x2 or ny1 != y2:
+        nx1 += stepx
+        ny1 += stepy
+        add_place(nx1, ny1, color)
+
+    add_place(x1, y1, color)
+    pass
 
 
 ''' check if the given cell is valid or not '''
-"""
+
 def check_cell(x, y, color):
-    tracker = []
-    if color > 0:
-        same = list(white_places)
-        differ = list(black_places)
-    else:
-        same = list(black_places)
-        differ = list(white_places)
-
-    for check in same:
-        if check == [x,y]:
-            return
-        difference = [check[0] - x, check[1] - y]
-        if difference[0] == difference[1]:
-            if check[0] > x:
-                for hell_stepper in range(1,check[0] - x):
-                    try:
-                        ind = differ.index([x + hell_stepper, y + hell_stepper])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-            else:
-                for hell_stepper in range(1, x - check[0]):
-                    try:
-                        ind = differ.index([check[0] + hell_stepper, check[1] + hell_stepper])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-        if difference[0] == 0:
-            if check[1] > y:
-                for hell_stepper in range(1, check[1] - y):
-                    try:
-                        ind = differ.index([check[0], hell_stepper + y])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-            else:
-                for hell_stepper in range(1, y - check[1]):
-                    try:
-                        ind = differ.index([check[0], check[1] + hell_stepper])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-
-        if difference[1] == 0:
-            if check[0] > x:
-                for hell_stepper in range(1, check[0] - x):
-                    try:
-                        ind = differ.index([x + hell_stepper, check[1]])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-            else:
-                for hell_stepper in range(1, x - check[0]):
-                    try:
-                        ind = differ.index([check[0] + hell_stepper, check[1]])
-                        tracker.append(differ[ind])
-                    except:
-                        tracker = []
-                        break
-
-        if tracker != []:
-            for something in tracker:
-                add_place(something[0], something[1], -color)
-
-        tracker = []
-        
-                
-        # TODO
-                    
+    stepx = [0, 1, 1, 1, 0, -1, -1, -1]
+    stepy = [1, 1, 0, -1, -1, -1, 0, 1]
+    for i in range(8):
+        checkx = x + stepx[i]
+        checky = y + stepy[i]
+        if main_matrix[checky][checkx] == -color:
+            while checkx >= 0 and checkx <= 8 and checky >= 0 and checky <= 8:
+                if main_matrix[checky][checkx] == color:
+                    turn_all(x, y, checkx, checky, color, stepx[i], stepy[i])
+                    break
+                elif main_matrix[checky][checkx] == 0:
+                    break
+                checkx += stepx[i]
+                checky += stepy[i]
     pass
-"""
+
 def draw_table():
     pass
 
@@ -143,12 +86,17 @@ def start():
 """ Init game """
 add_place(3,3,1)
 add_place(3,4,-1)
-add_place(4,3,1)
-add_place(4,4,-1)
-add_place(4, 2, -1)
+add_place(4,3,-1)
+add_place(4,4,1)
 
-check_cell(4, 5, 1)
-check_cell(4, 1, 1)
+add_place(2, 4, -1)
+
+print main_matrix
+
+check_cell(1, 4, 1)
+print main_matrix
+
+check_cell(4, 5, -1)
 print main_matrix
 while not gameExit:
     start()
