@@ -118,7 +118,25 @@ def mouse_pos():
         if main_matrix[y][x] == 0:
             draw_table()
             pygame.draw.circle(gamedisplay, _c_, [x*50 + 25, y*50 + 25], 25, 3)
-            
+
+
+""" Display Score """
+
+def disp_score():
+    ctr_white = 0
+    ctr_black = 0
+    for x in range(8):
+        for y in range(8):
+            if main_matrix[y][x] == -1:
+                ctr_black += 1
+            elif main_matrix[y][x] == 1:
+                ctr_white += 1
+
+    font = pygame.font.SysFont(None, 25)
+    msg = "White:"+str(ctr_white)+ "    Black:" + str(ctr_black)
+    score_disp = font.render(msg, True, black)
+    gamedisplay.blit(score_disp, [500, 200])
+    pass
 
 ''' Main gameloop function '''
 def start():
@@ -126,6 +144,9 @@ def start():
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             gameExit = True
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_q:
+                gameExit = True
         elif event.type == pygame.MOUSEBUTTONDOWN:
             pos = pygame.mouse.get_pos()
             if pos[0] < 400 and pos[1] < 400:
@@ -137,6 +158,7 @@ def start():
     check_whole_table()
     draw_table()
     mouse_pos()
+    disp_score()
     pygame.display.update()
     pyClock.tick(FPS)
 
@@ -150,6 +172,7 @@ add_place(4,4,1)
 while not gameExit:
     start()
 
+pygame.display.quit()
 pygame.quit()
 quit()
 
