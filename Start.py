@@ -53,6 +53,8 @@ def turn_all(x1, y1, x2, y2, color, stepx, stepy):
 
 def check_cell(x, y, color2, doturn = True):
     global color
+    if main_matrix[y][x] != 0:
+        return -1
     stepx = [0, 1, 1, 1, 0, -1, -1, -1]
     stepy = [1, 1, 0, -1, -1, -1, 0, 1]
     flag = False
