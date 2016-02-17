@@ -1,6 +1,7 @@
 # Othello game using Python and Pygame
 
 import pygame
+import time
 
 pygame.init()
 
@@ -18,6 +19,7 @@ gamedisplay = pygame.display.set_mode([WIDTH,HEIGHT])
 pyClock = pygame.time.Clock()
 FPS = 60
 gameExit = False
+font = pygame.font.SysFont(None, 25)
 
 """ Game function variables """
 main_matrix = []
@@ -122,9 +124,10 @@ def mouse_pos():
             pygame.draw.circle(gamedisplay, _c_, [x*50 + 25, y*50 + 25], 25, 3)
 
 
-""" Display Score """
+""" Display Score and check if game is finished """
 
 def disp_score():
+    global font, ctr_white, ctr_black, gameExit
     ctr_white = 0
     ctr_black = 0
     for x in range(8):
@@ -134,35 +137,70 @@ def disp_score():
             elif main_matrix[y][x] == 1:
                 ctr_white += 1
 
-    font = pygame.font.SysFont(None, 25)
+    
     msg = "White:"+str(ctr_white)+ "    Black:" + str(ctr_black)
     score_disp = font.render(msg, True, black)
     gamedisplay.blit(score_disp, [500, 200])
+
+    if ctr_white + ctr_black == 64:
+        gameExit = True
     pass
+
+""" If player wants to quit the game """
+def quit_game(cont=True, winner=None):
+    global gameExit, font
+    gamedisplay.fill(yellow)
+    if not cont:
+        msg = "Press SPACE to continue"
+        msg2 = "ESC to quit"
+    else:
+        msg = "Winner is "
+        if winner is 1:
+            msg += "WHITE"
+        else:
+            msg += "BLACK"
+
+        msg2 = "Press SPACE to continue"
+
+    quit_disp = font.render(msg, True, black)
+    quit_disp2 = font.render(msg2, True, black)
+    gamedisplay.blit(quit_disp, [WIDTH/2 - 40, HEIGHT/2])
+    gamedisplay.blit(quit_disp2, [WIDTH/2 - 40, HEIGHT/2 + 40])
+    pygame.display.update()
+    time.sleep(5)
+    gameExit = True
+    pass
+
 
 ''' Main gameloop function '''
 def start():
     global gameExit, color
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameExit = True
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_q:
+    while not gameExit:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
                 gameExit = True
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            if pos[0] < 400 and pos[1] < 400:
-                x = int(pos[0]/50)
-                y = int(pos[1]/50)
-                check_cell(x, y, color)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_q:
+                    gameExit = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = pygame.mouse.get_pos()
+                if pos[0] < 400 and pos[1] < 400:
+                    x = int(pos[0]/50)
+                    y = int(pos[1]/50)
+                    check_cell(x, y, color)
 
-    gamedisplay.fill(yellow)
-    check_whole_table()
-    draw_table()
-    mouse_pos()
-    disp_score()
-    pygame.display.update()
-    pyClock.tick(FPS)
+        gamedisplay.fill(yellow)
+        check_whole_table()
+        draw_table()
+        mouse_pos()
+        disp_score()
+        pygame.display.update()
+        pyClock.tick(FPS)
+
+    quit_game()
+    pygame.display.quit()
+    pygame.quit()
+    quit()
 
 
 """ Init game """
@@ -171,10 +209,4 @@ add_place(3,4,-1)
 add_place(4,3,-1)
 add_place(4,4,1)
 
-while not gameExit:
-    start()
-
-pygame.display.quit()
-pygame.quit()
-quit()
-
+start()
