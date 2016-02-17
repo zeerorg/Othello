@@ -21,14 +21,6 @@ FPS = 60
 gameExit = False
 font = pygame.font.SysFont(None, 25)
 
-""" Game function variables """
-main_matrix = []
-white_places = []
-black_places = []
-color = -1
-for x in range(8):
-    main_matrix.append([0,0,0,0,0,0,0,0])
-
 ''' Getting game display to work  '''
 pygame.display.set_caption('Othello')
 gamedisplay.fill(yellow)
@@ -144,31 +136,52 @@ def disp_score():
 
     if ctr_white + ctr_black == 64:
         gameExit = True
+        if ctr_white > ctr_black:
+            quit_game(False, 1)
+        else:
+            quit_game(False, -1)
     pass
 
 """ If player wants to quit the game """
 def quit_game(cont=True, winner=None):
     global gameExit, font
+    gameExit = False
     gamedisplay.fill(yellow)
-    if not cont:
+    if cont:
         msg = "Press SPACE to continue"
         msg2 = "ESC to quit"
     else:
         msg = "Winner is "
         if winner is 1:
-            msg += "WHITE"
+            msg += "WHITE: "+str(ctr_white)
         else:
-            msg += "BLACK"
+            msg += "BLACK: "+str(ctr_black)
 
         msg2 = "Press SPACE to continue"
 
+    draw_table()
     quit_disp = font.render(msg, True, black)
     quit_disp2 = font.render(msg2, True, black)
-    gamedisplay.blit(quit_disp, [WIDTH/2 - 40, HEIGHT/2])
-    gamedisplay.blit(quit_disp2, [WIDTH/2 - 40, HEIGHT/2 + 40])
+    gamedisplay.blit(quit_disp, [500, 200])
+    gamedisplay.blit(quit_disp2, [500, 300])
     pygame.display.update()
-    time.sleep(5)
-    gameExit = True
+
+    while not gameExit:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                gameExit = True
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    if not cont:
+                        reset()
+                    start()
+                elif event.key == pygame.K_ESCAPE:
+                    gameExit = True
+
+    if not cont:
+        pygame.display.quit()
+        pygame.quit()
+        quit()                
     pass
 
 
@@ -203,10 +216,23 @@ def start():
     quit()
 
 
-""" Init game """
-add_place(3,3,1)
-add_place(3,4,-1)
-add_place(4,3,-1)
-add_place(4,4,1)
+    
 
+""" Init game """
+def reset():
+    global main_matrix, white_places, black_places, color
+    main_matrix = []
+    white_places = []
+    black_places = []
+    color = -1
+    for x in range(8):
+        main_matrix.append([0,0,0,0,0,0,0,0])
+
+    add_place(3,3,1)
+    add_place(3,4,-1)
+    add_place(4,3,-1)
+    add_place(4,4,1)
+    pass
+
+reset()
 start()
